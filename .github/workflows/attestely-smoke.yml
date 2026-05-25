@@ -11,14 +11,3 @@ jobs:
       - uses: getAttestely/cli@v1     # v1 pointe maintenant sur v0.1.1
         with:
           exit-zero: true              # report-only -> jamais d'échec sur findings
-      - name: DEBUG semgrep on runner
-        if: always()
-        run: |
-          echo "CI=$CI GITHUB_ACTIONS=$GITHUB_ACTIONS"
-          env | grep -i semgrep || echo "(no SEMGREP_* env)"
-          SG=$(command -v semgrep || echo "$HOME/.attestely/bin/semgrep")
-          echo "semgrep bin: $SG"; "$SG" --version
-          "$SG" --config=p/default --json --quiet --disable-version-check --metrics=off . > sg.json 2> sg.err || echo "exit=$?"
-          echo "findings: $(tr ',' '\n' < sg.json | grep -c '\"check_id\"')"
-          echo "--- errors (head) ---"; head -20 sg.err
-          echo "--- check_ids ---"; tr ',' '\n' < sg.json | grep '"check_id"' | head
