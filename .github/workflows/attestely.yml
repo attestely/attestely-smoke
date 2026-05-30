@@ -1,0 +1,26 @@
+# Attestely security scanner.
+# This first scan is report-only (exit-zero) and never fails your CI.
+# Safe to edit — tighten with fail-on once you're ready.
+name: Attestely security scan
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Attestely scan
+        uses: getAttestely/cli@v1
+        with:
+          token: ${{ secrets.ATTESTELY_TOKEN }}
+          api_url: https://api.staging.attestely.com
+          exit-zero: "true"
